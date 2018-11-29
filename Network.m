@@ -144,4 +144,10 @@ BOOL haveNetwork;
         }
     }];
 }
+//取消网络请求
++(void)cancelRequest{
+    AFHTTPSessionManager *manager = [self shareManager];
+    [manager.operationQueue cancelAllOperations];
+}
+
 @end

@@ -29,4 +29,6 @@ typedef void(^progressBlock) (NSProgress *progress);
 +(void)searchRecipe:(NSString *)recipe success:(successBlock)success failure:(failBlock)failure;
 //上传头像
 +(void)uploadPicWithUserName:(NSString *)userName images:(NSMutableArray *)images progress:(progressBlock)progress success:(successBlock)success failure:(failBlock)failure;
+//取消网络请求
++(void)cancelRequest;
 @end
