@@ -50,41 +50,47 @@ BOOL haveNetwork;
     return manager;
 }
 //获取新闻列表
-+(void)getNewsListWithContent:(NSString *)content page:(NSString *)page success:(successBlock)success failure:(failBlock)failure{
++(NSURLSessionDataTask *)getNewsListWithContent:(NSString *)content page:(NSString *)page success:(successBlock)success failure:(failBlock)failure{
     NSDictionary *parameters = @{@"channel":content,@"start":page,@"num":@"20",@"appkey":@"b6fdf294e2eb7e223f59efa5a239365e"};
-    [self getWithURLString:@"/jisuapi/get" parameter:parameters success:success failure:failure];
+    NSURLSessionDataTask *task = [self getWithURLString:@"/jisuapi/get" parameter:parameters success:success failure:failure];
+    return task;
 }
 
 //获取新闻标题
-+(void)getNewsListTitlesSuccess:(successBlock)success failure:(failBlock)failure{
++(NSURLSessionDataTask *)getNewsListTitlesSuccess:(successBlock)success failure:(failBlock)failure{
     NSDictionary *parameters = @{@"appkey":@"b6fdf294e2eb7e223f59efa5a239365e"};
-    [self getWithURLString:@"/jisuapi/channel" parameter:parameters success:success failure:failure];
+    NSURLSessionDataTask *task = [self getWithURLString:@"/jisuapi/channel" parameter:parameters success:success failure:failure];
+    return task;
 }
 
 //新闻搜索
-+(void)postNewsWithSearchContent:(NSString *)content success:(successBlock)success failure:(failBlock)failure{
++(NSURLSessionDataTask *)postNewsWithSearchContent:(NSString *)content success:(successBlock)success failure:(failBlock)failure{
     NSDictionary *parameters = @{@"keyword":content,@"appkey":@"b6fdf294e2eb7e223f59efa5a239365e"};
-    [self postURLString:@"/jisuapi/newSearch" parameters:parameters success:success fail:failure];
+    NSURLSessionDataTask *task = [self postURLString:@"/jisuapi/newSearch" parameters:parameters success:success fail:failure];
+    return task;
 }
 //菜谱分类
-+(void)getRecipeClassSuccess:(successBlock)success failure:(failBlock)failure{
++(NSURLSessionDataTask *)getRecipeClassSuccess:(successBlock)success failure:(failBlock)failure{
     NSDictionary *parameters = @{@"appkey":@"b6fdf294e2eb7e223f59efa5a239365e"};
-    [self postURLString:@"/jisuapi/recipe_class" parameters:parameters success:success fail:failure];
+    NSURLSessionDataTask *task = [self postURLString:@"/jisuapi/recipe_class" parameters:parameters success:success fail:failure];
+    return task;
 }
 //按分类检索
-+(void)getRecipeNameClassid:(NSString *)classid page:(NSString *)page success:(successBlock)success failure:(failBlock)failure{
++(NSURLSessionDataTask *)getRecipeNameClassid:(NSString *)classid page:(NSString *)page success:(successBlock)success failure:(failBlock)failure{
     NSDictionary *parameters = @{@"classid":classid,@"start":page,@"num":@"20",@"appkey":@"b6fdf294e2eb7e223f59efa5a239365e"};
-    [self postURLString:@"/jisuapi/byclass" parameters:parameters success:success fail:failure];
+    NSURLSessionDataTask *task = [self postURLString:@"/jisuapi/byclass" parameters:parameters success:success fail:failure];
+    return task;
 }
 //搜索
-+(void)searchRecipe:(NSString *)recipe success:(successBlock)success failure:(failBlock)failure{
++(NSURLSessionDataTask *)searchRecipe:(NSString *)recipe success:(successBlock)success failure:(failBlock)failure{
     NSDictionary *parameters = @{@"keyword":recipe,@"num":@"20",@"appkey":@"b6fdf294e2eb7e223f59efa5a239365e"};
-    [self getWithURLString:@"/jisuapi/search" parameter:parameters success:success failure:failure];
+    NSURLSessionDataTask *task = [self getWithURLString:@"/jisuapi/search" parameter:parameters success:success failure:failure];
+    return task;
 }
 //上传头像
-+(void)uploadPicWithUserName:(NSString *)userName images:(NSMutableArray *)images progress:(progressBlock)progress success:(successBlock)success failure:(failBlock)failure{
++(NSURLSessionDataTask *)uploadPicWithUserName:(NSString *)userName images:(NSMutableArray *)images progress:(progressBlock)progress success:(successBlock)success failure:(failBlock)failure{
     AFHTTPSessionManager *manager = [self shareManager];
-    [manager POST:@"" parameters:@{@"user_name":userName} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+    NSURLSessionDataTask *task = [manager POST:@"" parameters:@{@"user_name":userName} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         for (int i=0; i<images.count; i++) {
             UIImage *image = images[i];
             NSData *data = UIImagePNGRepresentation(image);
@@ -104,16 +110,17 @@ BOOL haveNetwork;
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         failure(error);
     }];
+    return task;
 }
 
 //GET
-+(void)getWithURLString:(NSString *)url parameter:(NSDictionary *)parameter success:(successBlock)success failure:(failBlock)failure{
++(NSURLSessionDataTask *)getWithURLString:(NSString *)url parameter:(NSDictionary *)parameter success:(successBlock)success failure:(failBlock)failure{
     
     AFHTTPSessionManager *manager = [self shareManager];
     url = [NSString stringWithFormat:@"%@%@",BasicURL,url];
     DLog(@"%@",parameter);
     DLog(@"%@",url);
-    [manager GET:url parameters:parameter progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    NSURLSessionDataTask *task = [manager GET:url parameters:parameter progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary * dict = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers error:nil];
         success(dict);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -123,16 +130,16 @@ BOOL haveNetwork;
         }else{
             failure(error);
         }
-        
     }];
+    return task;
 }
 //POST
-+(void)postURLString:(NSString *)url parameters:(NSDictionary *)parameters success:(successBlock )success fail:(failBlock )failure{
++(NSURLSessionDataTask *)postURLString:(NSString *)url parameters:(NSDictionary *)parameters success:(successBlock )success fail:(failBlock )failure{
     AFHTTPSessionManager *manager = [self shareManager];
     url = [NSString stringWithFormat:@"%@%@",BasicURL,url];
     DLog(@"%@",parameters);
     DLog(@"%@",url);
-    [manager POST:url parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    NSURLSessionDataTask *task = [manager POST:url parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary * dict = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableContainers error:nil];
         success(dict);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -143,11 +150,7 @@ BOOL haveNetwork;
             failure(error);
         }
     }];
-}
-//取消网络请求
-+(void)cancelRequest{
-    AFHTTPSessionManager *manager = [self shareManager];
-    [manager.operationQueue cancelAllOperations];
+    return task;
 }
 
 @end
